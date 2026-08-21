@@ -24,10 +24,10 @@ $$Ft = mS\sqrt{\dfrac{g}{S\sin 2x - h(\cos 2x + 1)}}$$
 
 ## 在线使用
 
-GitHub Pages 部署地址（开启后自动生成）：
+GitHub Pages 部署地址：
 
 ```
-https://lzj00934-collab.github.io/xjtlys/xjtlys.html
+https://lzj00934-collab.github.io/Xiaojiang-s-pitching-formula/xjtlys.html
 ```
 
 ## 本地使用
