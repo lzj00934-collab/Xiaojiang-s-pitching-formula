@@ -2,8 +2,6 @@
 
 一个篮球投篮出手参数计算器：输入球的质量、水平距离、出手角度、高度差，直接算出需要的冲量（以及平均作用力）。
 
-公式出自作者（高一学生）独立推导的投篮模型，页面内的"公式原理"按钮可查看完整手写推导过程。
-
 ## 公式
 
 $$Ft = mS\sqrt{\dfrac{g}{S\sin 2x - h(\cos 2x + 1)}}$$
@@ -31,11 +29,7 @@ https://lzj00934-collab.github.io/Xiaojiang-s-pitching-formula/xjtlys.html
 ```
 
 ## 本地使用
-
 直接用浏览器打开 `xjtlys.html` 即可，无需安装任何东西。
-
-（公式渲染使用 MathJax CDN，联网时显示效果最佳。）
-
 ## License
 
 MIT
