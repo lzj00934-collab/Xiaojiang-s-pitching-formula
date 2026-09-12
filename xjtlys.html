@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小江投篮公式</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #16181d;
+    --panel2: #1c1f26;
+    --text: #e8eaf0;
+    --muted: #9aa0ad;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --border: #2a2d35;
+    --danger: #f87171;
+    --success: #4ade80;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px 48px;
+  }
+  .container { max-width: 760px; width: 100%; margin: auto; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px 24px;
+  }
+  .card-title {
+    text-align: center;
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 22px;
+  }
+
+  .formula-box {
+    margin-bottom:25px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    font-size: 1.15rem;
+    overflow-x: auto;
+  }
+  .cond-box {
+    margin-top: 14px;
+    font-size: 0.92rem;
+    color: var(--muted);
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+  }
+  .cond-box b { color: var(--text); font-weight: 600; }
+  .cond-box p { margin: 2px 0; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+  }
+  .field label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .field label b { color: var(--text); font-size: 0.95rem; }
+  .field input {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input:focus { border-color: var(--accent); }
+  .field .hint { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+  /* 隐藏输入框自带的增大/减小按钮 */
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+
+  .btn-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  button {
+    padding: 11px 26px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.05s;
+  }
+  button:active { transform: scale(0.98); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .btn-ghost:hover { background: rgba(59,130,246,0.12); }
+
+  .result {
+    margin-top: 20px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: none;
+  }
+  .result.show { display: block; }
+  .result .main {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--success);
+    word-break: break-all;
+  }
+  .result .sub {
+    margin-top: 8px;
+    font-size: 0.95rem;
+    color: var(--text);
+    word-break: break-all;
+  }
+  .result .err {
+    font-size: 0.95rem;
+    color: var(--danger);
+    font-weight: 600;
+  }
+  .result .note { font-size: 0.8rem; color: var(--muted); margin-top: 10px; }
+
+  .card-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ---------- 弹窗 ---------- */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.72);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 24px 12px;
+    overflow: hidden;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    max-width: 860px;
+    width: 100%;
+    max-height: calc(100vh - 48px);
+    padding: 22px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+  }
+  .modal-head h3 { font-size: 1.1rem; font-weight: 600; }
+  .modal-close {
+    background: var(--panel2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 36px; height: 36px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+  .modal-close:hover { color: var(--text); border-color: var(--muted); }
+  .modal-body {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    min-height: 0;
+    padding-right: 8px;
+  }
+  /* 弹窗内部滑动条 */
+  .modal-body::-webkit-scrollbar { width: 8px; }
+  .modal-body::-webkit-scrollbar-track { background: transparent; }
+  .modal-body::-webkit-scrollbar-thumb {
+    background: #3a3d46;
+    border-radius: 4px;
+  }
+  .modal-body::-webkit-scrollbar-thumb:hover { background: #4a4e59; }
+  .modal-body { scrollbar-width: thin; scrollbar-color: #3a3d46 transparent; }
+  .modal-body .cond-box { margin-bottom: 20px; }
+  .modal-body img {
+    display: block;
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+  }
+  .modal-body .img-cap {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin: -8px 0 18px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="card">
+    <h1 class="card-title">小江投篮公式</h1>
+
+    <div class="grid">
+      <div class="field">
+        <label><b>m</b> 球的质量（kg）</label>
+        <input type="number" id="m" step="any" placeholder="请输入">
+      </div>
+      <div class="field">
+        <label><b>S</b> 水平距离（m）</label>
+        <input type="number" id="S" step="any" placeholder="请输入">
+      </div>
+      <div class="field">
+        <label><b>x</b> 力与水平方向夹角（°）</label>
+        <input type="number" id="x" step="any" placeholder="请输入">
+        <div class="hint">h&lt;0 时可用 270°~360°（向下出手）</div>
+      </div>
+      <div class="field">
+        <label><b>h</b> 高度差（m）</label>
+        <input type="number" id="h" step="any" placeholder="请输入">
+       
+      </div>
+      <div class="field">
+        <label><b>g</b> 重力加速度（m/s²）</label>
+        <input type="number" id="g" value="9.8" step="any">
+      </div>
+      <div class="field">
+        <label><b>t</b> 作用时间（s，选填）</label>
+        <input type="number" id="t" value="" step="any" placeholder="填写后可算出 F">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="calc()">计 算</button>
+      <button class="btn-ghost" onclick="reset()">清空</button>
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <div class="card-footer">
+      <button class="btn-ghost" onclick="openModal()">公式原理</button>
+    </div>
+  </div>
+</div>
+
+<!-- 公式原理弹窗 -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>公式原理</h3>
+      <button class="modal-close" onclick="closeModal()" title="关闭">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="formula-box">
+        $$Ft = mS\sqrt{\dfrac{g}{S\sin 2x - h(\cos 2x + 1)}}$$
+      </div>
+       <img src="images/1.jpg" alt="推导第1页">
+      <img src="images/2.jpg" alt="推导第2页">
+      <img src="images/3.jpg" alt="推导第3页">
+      <img src="images/4.jpg" alt="推导第4页">
+    </div>
+  </div>
+</div>
+
+<script>
+function calc() {
+  const r = document.getElementById('result');
+  const val = id => parseFloat(document.getElementById(id).value);
+  const m = val('m'), S = val('S'), xDeg = val('x'), h = val('h'), g = val('g'), t = val('t');
+  r.classList.add('show');
+
+  if ([m, S, xDeg, h, g].some(v => isNaN(v))) {
+    r.innerHTML = '<div class="err">请先填写 m、S、x、h、g 这些必填项</div>';
+    return;
+  }
+  if (m <= 0 || S <= 0 || g <= 0) {
+    r.innerHTML = '<div class="err">m、S、g 必须大于 0</div>';
+    return;
+  }
+  if (h >= 0) {
+    if (xDeg <= 0 || xDeg >= 90) {
+      r.innerHTML = '<div class="err">需满足 0° &lt; x &lt; 90°</div>';
+      return;
+    }
+  } else {
+    // h < 0：允许第一象限 [0°,90°) 或第四象限 (270°,360°]（向下出手）
+    const inFirst = xDeg >= 0 && xDeg < 90;
+    const inFourth = xDeg > 270 && xDeg <= 360;
+    if (!inFirst && !inFourth) {
+      r.innerHTML = '<div class="err">需满足 0° ≤ x &lt; 90° 或 270° &lt; x ≤ 360°</div>';
+      return;
+    }
+  }
+
+  const x = xDeg * Math.PI / 180;
+  const D = S * Math.sin(2 * x) - h * (Math.cos(2 * x) + 1);
+
+  if (D <= 1e-12) {
+    if (h >= 0) {
+      r.innerHTML = '<div class="err">需满足 0° &lt; x &lt; 90° 且 tan x ≥ 2h/S</div>';
+    } else {
+      r.innerHTML = '<div class="err">需满足 (0° ≤ x &lt; 90° 或 270° &lt; x ≤ 360°) 且 tan x > h/S</div>';
+    }
+    return;
+  }
+  if (h >= 0 && Math.tan(x) < 2 * h / S - 1e-12) {
+    r.innerHTML = '<div class="err">需满足 tan x ≥ 2h/S</div>';
+    return;
+  }
+
+  const Ft = m * S * Math.sqrt(g / D);
+  let html = '<div class="main">Ft（冲量）= ' + fmt(Ft) + ' N·s</div>';
+  if (!isNaN(t) && t > 0) {
+    html += '<div class="sub">F（平均作用力）= Ft / t = ' + fmt(Ft / t) + ' N</div>';
+  }
+  html += '<div class="note">代入：m=' + fmt(m) + '，S=' + fmt(S) + '，x=' + fmt(xDeg) + '°，h=' + fmt(h) + '，g=' + fmt(g) + '，分母=' + fmt(D) + '</div>';
+  r.innerHTML = html;
+}
+
+function fmt(v) {
+  if (!isFinite(v)) return String(v);
+  const s = v.toPrecision(8);
+  return parseFloat(s).toString();
+}
+
+function reset() {
+  ['m','S','x','h','g','t'].forEach(id => document.getElementById(id).value = '');
+  const r = document.getElementById('result');
+  r.classList.remove('show');
+  r.innerHTML = '';
+}
+
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
