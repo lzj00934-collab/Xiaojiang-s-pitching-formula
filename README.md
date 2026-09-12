@@ -20,9 +20,6 @@ $$Ft = mS\sqrt{\dfrac{g}{S\sin 2x - h(\cos 2x + 1)}}$$
 模型假设：忽略空气阻力与球自转，球与框视为质点，向上为正方向。
 
 ## 在线使用
-
-GitHub Pages 部署地址：
-
 ```
 https://lzj00934-collab.github.io/Xiaojiang-s-pitching-formula/xjtlys.html
 ```
