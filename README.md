@@ -1,8 +1,6 @@
 # 小江投篮一式
 
-一个篮球投篮出手参数计算器：输入球的质量、水平距离、出手角度、高度差，直接算出需要的冲量（以及平均作用力）。
-
-## 公式
+一个篮球投篮出手参数计算器：输入球的质量、水平距离、出手角度、高度差，直接算出需要的冲量Ft
 
 $$Ft = mS\sqrt{\dfrac{g}{S\sin 2x - h(\cos 2x + 1)}}$$
 
@@ -21,15 +19,6 @@ $$Ft = mS\sqrt{\dfrac{g}{S\sin 2x - h(\cos 2x + 1)}}$$
 模型假设：忽略空气阻力与球自转，球与框视为质点，向上为正方向。
 
 ## 在线使用
-
-GitHub Pages 部署地址：
-
 ```
 https://lzj00934-collab.github.io/Xiaojiang-s-pitching-formula/xjtlys.html
 ```
-
-## 本地使用
-直接用浏览器打开 `xjtlys.html` 即可，无需安装任何东西。
-## License
-
-MIT
